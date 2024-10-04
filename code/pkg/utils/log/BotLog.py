@@ -184,7 +184,8 @@ async def log_bot_list_text(LogDict: dict|FileManage,bot:Bot) -> str:
     """
     i = 0
     text = ""
-    for gu, ginfo in LogDict['guild']['data'].items():
+    LogDictTemp = deepcopy(LogDict)
+    for gu, ginfo in LogDictTemp['guild']['data'].items():
         i+=1
         try:
             guild_name = ginfo['name'] if ginfo['name'] else (await bot.client.fetch_guild(gu)).name
@@ -196,7 +197,7 @@ async def log_bot_list_text(LogDict: dict|FileManage,bot:Bot) -> str:
             text+=f"[{i}] {guild_name}   = {len(ginfo['user'])}\n"
             # 字数限制为5k字，超过就跳出
             if len(text) >= 4900:
-                text+= f"字数限制，省略后续 {len(LogDict['guild']['data']) - i} 个服务器"
+                text+= f"字数限制，省略后续 {len(LogDictTemp['guild']['data']) - i} 个服务器"
                 break
         except Exception as result:
             # api调用错误，403是机器人不在服务器，4000是服务器不存在
@@ -206,6 +207,7 @@ async def log_bot_list_text(LogDict: dict|FileManage,bot:Bot) -> str:
             # 其他错误
             _log.exception(f"err ouccur | g:{gu}")
             continue
+    
     return text
 
 
